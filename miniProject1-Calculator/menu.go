@@ -19,6 +19,10 @@ func menu() {
 			break
 		}
 
+		if operation == -2 {
+			result = 0
+		}
+
 		result = calculateOperationSelected(uint(operation), result)
 
 		cleanMenu()
@@ -29,7 +33,7 @@ func menu() {
 
 func showMenuText(result float64) {
 	fmt.Printf("Calculator\nresult: %v\n", result)
-	fmt.Println("Operations:\n1: Add\n2: Substract\n3: Division\n4: Multiplication")
+	fmt.Println("Enter the number of the Operations:\n1: Add\n2: Substract\n3: Division\n4: Multiplication")
 	fmt.Println("Not a number to reset\n0: Exit")
 }
 
