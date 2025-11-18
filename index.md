@@ -17,3 +17,4 @@
 ## Pointers
 
 - [pointers](./goPointers/pointers.md)
+- [methods](./goMethods/methods.md)
