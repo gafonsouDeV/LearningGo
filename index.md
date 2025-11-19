@@ -18,3 +18,7 @@
 
 - [pointers](./goPointers/pointers.md)
 - [methods](./goMethods/methods.md)
+
+## Interfaces
+
+- [interfaces](./goInterfaces/interfaces.md)
