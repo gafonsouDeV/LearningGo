@@ -22,3 +22,7 @@
 ## Interfaces
 
 - [interfaces](./goInterfaces/interfaces.md)
+
+## Generics
+
+- [generics](./goGenerics/generics.md)
