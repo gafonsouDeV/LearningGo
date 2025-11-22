@@ -26,3 +26,7 @@
 ## Generics
 
 - [generics](./goGenerics/generics.md)
+
+## Errors
+
+- [erros](./goError/error.md)

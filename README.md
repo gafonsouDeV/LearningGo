@@ -11,3 +11,5 @@ Here will be also links from usefuls resources I used to study and learn.
 https://roadmap.sh/golang
 
 https://go.dev/wiki
+
+https://go.dev/error-handling-and-go
