@@ -30,3 +30,7 @@
 ## Errors
 
 - [erros](./goError/error.md)
+
+## Code Organization
+
+- [modules](./goCodeOrganization/goModules/modules.md)
