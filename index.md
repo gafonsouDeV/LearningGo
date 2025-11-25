@@ -34,3 +34,4 @@
 ## Code Organization
 
 - [modules](./goCodeOrganization/goModules/modules.md)
+- [packages](./goCodeOrganization/goPackages/packages.md)
