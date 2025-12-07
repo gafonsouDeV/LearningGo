@@ -3,7 +3,7 @@ package utils
 import "fmt"
 
 func ValidateNumberInput(input int) bool {
-	return input <= 0
+	return input > 0
 }
 
 func ReadNumberInput() int {
