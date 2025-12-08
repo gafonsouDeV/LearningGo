@@ -40,5 +40,5 @@ func download(url string, wg *sync.WaitGroup) {
 	println("Dowloading " + url + "...")
 	sleepTime := rand.Intn(3)
 	time.Sleep(time.Duration(sleepTime) * time.Second)
-	println(url+" dowloaded.", url)
+	println(url + " dowloaded.")
 }
