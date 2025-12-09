@@ -39,3 +39,8 @@
 ## Concurrency
 
 - [goroutines](./goConcurrency/goroutines.md)
+
+### Concurrency projects
+- [fake Image Downloader](./projects/fakeImageDowloader/)
+- [fake Weather Service](./projects/fakeWeatherService/)
+- [fake Image Processor](./projects/fakeImageProcessing/)
