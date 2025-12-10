@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	var images [6]string
+	var images [20]string
 	for index := range len(images) {
 		images[index] = "image" + strconv.Itoa(index+1) + ".png"
 	}
@@ -25,7 +25,7 @@ func main() {
 	var logMutex sync.Mutex
 	var logs []string
 
-	for i := 1; i < workerCount; i++ {
+	for i := 1; i <= workerCount; i++ {
 		go workers.Worker(i, jobs, results, errors, &wg, &logMutex, &logs)
 	}
 
