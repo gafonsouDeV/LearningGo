@@ -6,7 +6,7 @@ As in other languages define contracts specifying method signatures without impl
 
 Declared with ``type InterfaceName interface{}`` sintax. Enable polymorphism and flexible, testable code depending on behavior rather than concrete types.
 
-```
+```go
 type Geometry interface {
     area() float64
     perim() float64
@@ -55,7 +55,7 @@ func main() {
 
 The empty interface can hold values of any type since every type implements at least zero methods. Requires type assertions or type swtiches to access underlying values. Common in APIs handling unknown data types.
 
-```
+```go
 func describe(i interface{}) {
     fmt.Println(i)
 }
@@ -79,9 +79,9 @@ Create new interfaces by combining existing ones, promoting composition and reus
 
 ## Type Assertions
 
-Extract underlying concrete value from interface ``value.(Type)`` or ``value, ok := value.(Type)`` for save assertion. Panics if type assertion fails without ok form. 
+Extract underlying concrete value from interface ``value.(Type)`` or ``value, ok := value.(Type)`` for save assertion. Panics if type assertion fails without ok form.
 
-```
+```go
 func main() {
     var i interface{} = "hello"
 
@@ -103,9 +103,9 @@ If the interface holds the type then ok will be true and the varible the underly
 
 ## Type Switch
 
-Special form of switch statement that operates on types rather than values ``switch val := i.(type)``. Used with interfaces to determine underlying concrete rype. Each case specifies types to match. 
+Special form of switch statement that operates on types rather than values ``switch val := i.(type)``. Used with interfaces to determine underlying concrete rype. Each case specifies types to match.
 
-```
+```go
 func main() {
     do(10)
     do("Dumbo")
