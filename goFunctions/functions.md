@@ -4,7 +4,7 @@ Declared with ``func`` keyword, support parameters and return values. Can be ass
 
 A function can take zero or more arguments
 
-```
+``` go
 package main
 
 import "fmt"
@@ -30,7 +30,7 @@ Arguments treated as slice inside function.
 
 The ``...`` can be used also to unpack slices, arrays...
 
-```
+``` go
 package main
 
 import "fmt"
@@ -63,7 +63,7 @@ This is the idiomatic for error handling pattern
 
 Here two examples of how to use it:
 
-```
+``` go
 func calculateSumMaxAvg(numbers []int) (int, int, float64) {
     numbSize = len(numbers)
     if numbSize == 0 {
@@ -95,7 +95,7 @@ func calculateSumMaxAvg(numbers []int) (int, int, float64) {
 
 And now an example with error handle
 
-```
+```go
 func divide(num, num2 float32) (float32, error) {
     if num2 == 0 {
         return 0, errors.New("Division by zero is not possible")
@@ -111,7 +111,7 @@ func divide(num, num2 float32) (float32, error) {
 Functions declared withoud names as in some languages it can be also named as lambdas. Can be assigned to variables, passed as arguments or executed immediately. Useful for short operations, callbacks, goroutines and closures. Access enclosing scope variables. Is it commonly use in event handlers and functional patterns.
 
 
-``` 
+``` go
 func main() {
     sum := func(num1 int, num2 int) {
         return num1 + num2
@@ -127,7 +127,7 @@ Functions capturing variables from sorrounding scope, accessible even after oute
 
 To be more specific a closure is a function value that references variables from outside its body. The function may access and assign to the referenced variables.
 
-'''
+```go
 func adder() func(int) int {
     sum := 0
     return func (num int) int {
@@ -143,7 +143,7 @@ func main() {
         fmt.Println(pos(i),neg(-i))
     }
 }
-'''
+```
 
 The output will be:
 
@@ -158,7 +158,6 @@ The output will be:
 10 -10 // 6 + 4
 
 Each closure is bound to its own sum variable
-
 
 ## Named Return Values
 

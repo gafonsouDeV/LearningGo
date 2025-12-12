@@ -2,7 +2,7 @@
 
 Threads managed by Go runtime enabling concurrent function execution. Created with ``go`` keyword prefix. Lightweight and minimal memory overhead, can run thousands/millions cocurrently. Runtime handles scheduling across CPU cores. Communicate through channels, fundamental to Go's concurrency.
 
-```
+```go
 func main() {
     go say("Universe")
     say("hello")
@@ -36,7 +36,7 @@ Primary mechanism for goroutine communication. Typed conduits created with ``mak
 
 By default, sends and receives block until the other side is ready. This allow goroutines to synchronize without explicit locks or condition variables.
 
-``` 
+```go
 func main() {
     numbers := []int{7,2,8,-9,4,0}
 
@@ -65,11 +65,11 @@ On this example the work is distributed in two goroutines. Once both goroutines 
 
 ### Select Statement
 
-Multiplexer for channel operations. Waits on multiple channel operations simultaneously, executing first one ready. Support send/receive operations, default case for non-blocking behavior. 
+Multiplexer for channel operations. Waits on multiple channel operations simultaneously, executing first one ready. Support send/receive operations, default case for non-blocking behavior.
 
 A ``select`` blocks until one of its cases can run.
 
-```
+```go
 func main() {
     result := make(chan int)
     quit := make(chan int)
@@ -105,7 +105,7 @@ Unbuffered channels provide synchronous communication - sender blocks until rece
 
 ## Worker Pools
 
-Concurrency pattern using fixed number of goroutines to process tasks from shared queue. Controls resource usage while maintaining parallelism. 
+Concurrency pattern using fixed number of goroutines to process tasks from shared queue. Controls resource usage while maintaining parallelism.
 
 ## sync Package
 

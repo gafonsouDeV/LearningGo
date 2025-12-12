@@ -22,7 +22,7 @@ Allows compiler to automatically determine generic type arguments based on funct
 
 ## Code example using Generics
 
-```
+```go
 type Number Interface {
     int64 | float64
 }

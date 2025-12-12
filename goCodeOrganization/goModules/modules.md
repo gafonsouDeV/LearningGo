@@ -10,4 +10,4 @@ Ensures ``go.mod`` matches source code bu adding missing requirements and removi
 
 ## go mod vendor
 
-Creates ``vendor`` directory with dependency copies for bundling with source code. Ensures builds work without internet access. Usefull for deployment, air-gapped environmentsm and complete control over dependency availability
+Creates ``vendor`` directory with dependency copies for bundling with source code. Ensures builds work without internet access. Usefull for deployment, air-gapped environmentsm and complete control over dependency availability.

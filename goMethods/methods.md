@@ -24,7 +24,7 @@ In this example, the ``Abs`` method has a receiver of type ``Point`` named p.
 
 Methods receive pointer to struct rather than copy using ``func (p *Type) methodName()`` syntax. Necessary when method modifies receiver state or struct is large.
 
-```
+```go
 type Point struct {
     X, Y float64
 }
@@ -49,7 +49,8 @@ func main() {
 ```
 
 The ``Scale`` method must have a pointer receiver to change the ``Point`` vallue declared in the main function.
-```
+
+```go
 func (p *Point) Scale(num float64) {
     p.X = p.X * num
     p.Y = p.Y * num

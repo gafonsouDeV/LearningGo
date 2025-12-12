@@ -39,8 +39,12 @@
 ## Concurrency
 
 - [goroutines](./goConcurrency/goroutines.md)
+- [race](./goConcurrency/race.md)
+- [context package](./goConcurrency/contextPackage.md)
+- [concurrency patterns](./goConcurrency/concurrencyPatterns.md)
 
 ### Concurrency projects
+
 - [fake Image Downloader](./projects/fakeImageDowloader/)
 - [fake Weather Service](./projects/fakeWeatherService/)
 - [fake Image Processor](./projects/fakeImageProcessing/)

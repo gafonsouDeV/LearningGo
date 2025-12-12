@@ -14,7 +14,7 @@ func main() {
 		images[index] = "image" + strconv.Itoa(index+1) + ".png"
 	}
 
-	const workerCount = 3
+	const workerCount = 10
 
 	jobs := make(chan string)
 	results := make(chan string)

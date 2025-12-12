@@ -96,7 +96,7 @@ This is a special form of loop for iterating arrays, maps, slices, strings, and 
 
 To use this kind of ``for`` loop, the ``range`` clause is used
 
-```
+``` go
 week := [7]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
 
 for i, value := range week {
@@ -119,7 +119,7 @@ for _, value := range week {
 To iterate the strings first it is important to understand how they work in golang. Unlike some programming languages, Go treats strings as immutable values, which means once a string is created it cannot be modified. The string is a sequence of Unicode characters represented as a read-only slice of bytes and to proper character handling it should be use the ``rune`` type
 
 
-```
+``` go
 text := "String to iterate"
 
 for index, runeValue := range text {
@@ -131,7 +131,7 @@ for index, runeValue := range text {
 
 The ``break`` clause exits inmmediately innermost loop or switch statement. If there's nested loops it will exit the inmediate loop unless used with labels to break outer loops.
 
-```
+``` go
 package main
 
 import "fmt"
@@ -184,7 +184,7 @@ Breaking out of outer loop
 
 The ``continue`` statement is used when you want to skip the remaining portion of the loop and went to the next iteration.
 
-```
+``` go
 package main
 
 import "fmt"

@@ -16,7 +16,7 @@ Dynamic arrays built on top of arrays. Reference types with length and capacity.
 
 Slice capacity determines when reallocation occurs during append operations. Go usually doubles capacity for smaller slices. Pre-allocate with ``make([]T, length, capacity)`` to optimize memory usage and minimize allocation in performance-critical code.
 
-```
+``` go
 s := make([]int, 2, 3)
 s = append(s, 0)
 ftm.Print("Capacity: ", cap(s)) // Capacity: 3
@@ -35,7 +35,7 @@ The make function allocates a zeroed array and returns a slice that refers to th
 
 Convert slice to array using ``[N]T(slice)`` let's take the above example:
 
-```
+``` go
 weekArr := [7]string(week)
 ```
 This copies data from slice to fixed-size array. Panics if slice has fewer than N elements.
@@ -44,7 +44,7 @@ This copies data from slice to fixed-size array. Panics if slice has fewer than 
 
 Convert array to slices using expresions like ``array[:]`` or ``array[start:end]``. Creates slice header pointing to array memory, no data copying.
 
-```
+``` go
 arr := [5]int{1,2,3,4,5}
 slice := arr[1:4] // Creates a slide from index 1 to 3
 ```
@@ -63,7 +63,7 @@ Built-in associative data mapping keys to values. Keys must be comparable types.
 
 Map types are reference types, like slices and when initialize the default value is nil. A nil map behaves like an empty map when reading, but attempts to write to a nil map will cause a runtime panic;
 
-```
+``` go
 var week map[int]string // nil default value
 
 week = make(map[int]string) // map initialized
@@ -79,7 +79,7 @@ delete(week, 1) // the build in delete function removes an entry from the map
 
 Is a pattern for safely testing map key existence or type assertion success using ``value, ok := map[key]`` or ``value, ok := Interface(Type)``. Returns both value and boolean status, preventing panics and distinguishing zero values from missing keys.
 
-```
+``` go
 msg := "This is a message"
 n, ok := msg.(int) 
 if ok {
@@ -108,7 +108,7 @@ Custom data types related fields under single name. Similar to classes but metho
 
 The oficial definition in golang "A ``struct`` is a collection of fields"
 
-```
+``` go
 type Point struct {
     x int
     y int
@@ -125,7 +125,7 @@ Structs tags provides metadata using backticks with key-value pair. JSON tags co
 
 This is Essential for APIs and data serialization formats.
 
-```
+``` go
 type User struct {
     name string `json:"name"`
     email string `json:"email"`
@@ -136,7 +136,7 @@ type User struct {
 
 Struct embedding includes one struc inside another without field names, making embedded fields directly accessible. It has a similar behavior with the inheritance, but is not the same. Provides composition-based design.
 
-```
+``` go
 type User struct {
     name string
     email string

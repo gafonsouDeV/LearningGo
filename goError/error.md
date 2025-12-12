@@ -14,4 +14,4 @@ Create error chains preserving original errors while adding context using ``fmt.
 
 ## panic and recover
 
-``panic()`` stops execution and unwinds stack, ``recover()`` catches panics in deferred functions. Use sparingly for unrecoverable errors. While Go emphasizes explicit error, panic/recover serve as safety net for exceptional situations
+``panic()`` stops execution and unwinds stack, ``recover()`` catches panics in deferred functions. Use sparingly for unrecoverable errors. While Go emphasizes explicit error, panic/recover serve as safety net for exceptional situations.
