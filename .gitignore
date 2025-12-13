@@ -1,0 +1,26 @@
+# Go build artifacts
+/bin/
+/dist/
+/*.exe
+/*.exe~
+/*.dll
+/*.so
+/*.dylib
+
+# Go test cache
+*.test
+*.out
+
+# Logs
+*.log
+
+# Project runtime folders
+/inputFiles/*
+!/inputFiles/.gitkeep
+
+/output/*
+!/output/.gitkeep
+
+
+# OS files
+.DS_Store
