@@ -2,7 +2,7 @@
 
 ## Conditionals
 
-Control program flow baesd on conditions.
+Control program flow based on conditions.
 
 ### if
 
