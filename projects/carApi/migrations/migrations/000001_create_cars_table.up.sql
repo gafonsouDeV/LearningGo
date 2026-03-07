@@ -1,0 +1,10 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE cars (
+    id UUID PRIMARY KEY,
+    brand TEXT NOT NULL,
+    model TEXT NOT NULL,
+    plate TEXT UNIQUE NOT NULL,
+    year INT NOT NULL,
+    created_at TIMESTAMP NOT NULL
+);
