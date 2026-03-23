@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strings"
 
@@ -23,6 +24,7 @@ func (handler *CarHandler) GetCars(resWriter http.ResponseWriter, req *http.Requ
 	cars, err := handler.service.GetAllCars()
 
 	if err != nil {
+		log.Printf(err.Error())
 		http.Error(resWriter, "Failed to retrieve cars", http.StatusInternalServerError)
 	}
 

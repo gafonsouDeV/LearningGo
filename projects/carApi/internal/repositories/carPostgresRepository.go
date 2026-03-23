@@ -17,7 +17,7 @@ func NewCarPostgresRepository(db *pgxpool.Pool) *CarPostgresRepository {
 
 func (carRepository *CarPostgresRepository) GetAllCars() ([]models.Car, error) {
 	rows, err := carRepository.db.Query(context.Background(), `
-		SELECT id, brand, model, plate, year created_at
+		SELECT id, brand, model, plate, year, created_at
 		FROM cars
 	`)
 
