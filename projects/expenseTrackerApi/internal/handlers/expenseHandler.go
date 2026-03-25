@@ -139,3 +139,50 @@ func (expHandler *ExpenseHandler) CreateExpense(resWriter http.ResponseWriter, r
 	resWriter.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(resWriter).Encode("Expense created")
 }
+
+func (expHandler *ExpenseHandler) UpdateExpense(resWriter http.ResponseWriter, req http.Request) {
+	if req.Method != http.MethodPut {
+		http.Error(resWriter, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userIDStr, ok := auth.FromContext(req.Context())
+	if !ok {
+		http.Error(resWriter, "unauthorized", http.StatusUnauthorized)
+	}
+
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		http.Error(resWriter, "Invalid user ID", http.StatusUnauthorized)
+		return
+	}
+
+	expenseIDStr := req.PathValue("id")
+	if expenseIDStr == "" {
+		http.Error(resWriter, "Missing expense ID", http.StatusBadRequest)
+		return
+	}
+
+	expenseID, err := uuid.Parse(expenseIDStr)
+	if err != nil {
+		http.Error(resWriter, "Missing expense id", http.StatusBadRequest)
+	}
+
+	var updatedExpense dtos.ExpenseUpdate
+	updatedExpense.UserID = userID
+
+	err = json.NewDecoder(req.Body).Decode(&updatedExpense)
+	if err != nil {
+		http.Error(resWriter, "Invalid body", http.StatusBadRequest)
+		return
+	}
+
+	err = expHandler.expenseService.UpdateExpense(expenseID, updatedExpense)
+	if err != nil {
+		http.Error(resWriter, err.Error(), http.StatusBadRequest)
+	}
+
+	resWriter.Header().Set("Content-Type", "application/json")
+	resWriter.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(resWriter).Encode("Expense updated")
+}

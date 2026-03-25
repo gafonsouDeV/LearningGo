@@ -8,7 +8,7 @@ import (
 
 type ExpenseResponse struct {
 	ID          uuid.UUID `json:"id"`
-	Description string    `json:"string"`
+	Description string    `json:"description"`
 	Amount      float64   `json:"amount"`
 	Category    string    `json:"category"`
 	CreatedAt   time.Time `json:"created_at"`
@@ -16,7 +16,14 @@ type ExpenseResponse struct {
 
 type ExpenseCreation struct {
 	UserID      uuid.UUID `json:"id"`
-	Description string    `json:"string"`
+	Description string    `json:"description"`
+	Amount      float64   `json:"amount"`
+	Category    string    `json:"category"`
+}
+
+type ExpenseUpdate struct {
+	UserID      uuid.UUID `json:"id"`
+	Description string    `json:"description"`
 	Amount      float64   `json:"amount"`
 	Category    string    `json:"category"`
 }

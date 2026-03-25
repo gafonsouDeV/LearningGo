@@ -10,4 +10,6 @@ type ExpenseRepository interface {
 	List(uuid.UUID) ([]dtos.ExpenseResponse, error)
 	GetExpenseByIdAndUserId(uuid.UUID, uuid.UUID) (*dtos.ExpenseResponse, error)
 	CreateExpense(models.Expense) error
+	UpdateExpense(uuid.UUID, dtos.ExpenseUpdate) error
+	DeleteExpense(uuid.UUID, uuid.UUID) error
 }

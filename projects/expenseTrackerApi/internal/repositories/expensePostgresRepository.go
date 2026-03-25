@@ -2,6 +2,8 @@ package repositories
 
 import (
 	"context"
+	"errors"
+	"time"
 
 	"github.com/gafonsouDeV/LearningGo/projects/expenseTrackerApi/internal/dtos"
 	"github.com/gafonsouDeV/LearningGo/projects/expenseTrackerApi/internal/models"
@@ -50,6 +52,10 @@ func (expenseRepository *ExpensePostgresRepository) List(userID uuid.UUID) ([]dt
 		expenses = append(expenses, expense)
 	}
 
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return expenses, nil
 }
 
@@ -57,7 +63,7 @@ func (expenseRepository *ExpensePostgresRepository) GetExpenseByIdAndUserId(id u
 	query := `
 		SELECT id, description, amount, category, created_at
 		FROM expenses
-		WHERE id = $1
+		WHERE id = $1 AND user_id = $2
 	`
 
 	var expense dtos.ExpenseResponse
@@ -66,11 +72,12 @@ func (expenseRepository *ExpensePostgresRepository) GetExpenseByIdAndUserId(id u
 		context.Background(),
 		query,
 		id,
+		userID,
 	).Scan(
 		&expense.ID,
 		&expense.Description,
-		&expense.Category,
 		&expense.Amount,
+		&expense.Category,
 		&expense.CreatedAt,
 	)
 
@@ -99,6 +106,59 @@ func (expenseRepository *ExpensePostgresRepository) CreateExpense(expense models
 	)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (expenseRepository *ExpensePostgresRepository) UpdateExpense(id uuid.UUID, expense dtos.ExpenseUpdate) error {
+	query := `
+		UPDATE expenses
+		SET description=$1,amount=$2,category=$3,updated_at=$4
+		WHERE id=$5 AND user_id=$6
+	`
+
+	cmd, err := expenseRepository.db.Exec(
+		context.Background(),
+		query,
+		expense.Description,
+		expense.Amount,
+		expense.Category,
+		time.Now(),
+		id,
+		expense.UserID,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if cmd.RowsAffected() == 0 {
+		return errors.New("expense not found")
+	}
+
+	return nil
+}
+
+func (expenseRepository *ExpensePostgresRepository) DeleteExpense(expenseId uuid.UUID, userId uuid.UUID) error {
+	query := `
+		DELETE FROM expenses
+		WHERE id=$1 AND user_id=$2
+	`
+
+	cmd, err := expenseRepository.db.Exec(
+		context.Background(),
+		query,
+		expenseId,
+		userId,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if cmd.RowsAffected() == 0 {
+		return errors.New("expense not found")
 	}
 
 	return nil

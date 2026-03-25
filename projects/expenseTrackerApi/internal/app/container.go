@@ -31,7 +31,7 @@ func NewContainer() *Container {
 	authHandler := auth.NewAuthHandler(authSvc)
 
 	expenseRepo := repositories.NewExpensePostgresRepository(pool)
-	expenseService := services.NewExpenseService(expenseRepo)
+	expenseService := services.NewExpenseService(expenseRepo, appLogger)
 	expenseHandler := handlers.NewExpenseHandler(expenseService)
 
 	return &Container{
