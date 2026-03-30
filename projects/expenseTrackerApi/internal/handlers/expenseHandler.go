@@ -6,6 +6,7 @@ import (
 
 	"github.com/gafonsouDeV/LearningGo/projects/expenseTrackerApi/internal/auth"
 	"github.com/gafonsouDeV/LearningGo/projects/expenseTrackerApi/internal/dtos"
+	"github.com/gafonsouDeV/LearningGo/projects/expenseTrackerApi/internal/errors"
 	"github.com/gafonsouDeV/LearningGo/projects/expenseTrackerApi/internal/services"
 	"github.com/google/uuid"
 )
@@ -15,174 +16,149 @@ type ExpenseHandler struct {
 }
 
 func NewExpenseHandler(expenseService *services.ExpenseService) *ExpenseHandler {
-	return &ExpenseHandler{
-		expenseService: expenseService,
-	}
+	return &ExpenseHandler{expenseService: expenseService}
 }
 
-func (expHandler *ExpenseHandler) List(resWriter http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodGet {
-		http.Error(resWriter, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-	userIDStr, ok := auth.FromContext(req.Context())
-
-	if !ok {
-		http.Error(resWriter, "unauthorized", http.StatusUnauthorized)
-		return
+func getUserIDFromContext(r *http.Request) (uuid.UUID, error) {
+	userIDStr, ok := auth.FromContext(r.Context())
+	if !ok || userIDStr == "" {
+		return uuid.Nil, errors.Unauthorized("missing_user_id", "missing user id", nil)
 	}
 
 	userID, err := uuid.Parse(userIDStr)
 	if err != nil {
-		http.Error(resWriter, "Invalid user id", http.StatusUnauthorized)
-		return
+		return uuid.Nil, errors.BadRequest("invalid_user_id", "invalid user id format", err)
 	}
 
-	expenses, err := expHandler.expenseService.List(userID)
-	if err != nil {
-		http.Error(resWriter, err.Error(), http.StatusInternalServerError)
-	}
-
-	resWriter.Header().Set("Content-Type", "application/json")
-	response := struct {
-		UserID   string                 `json:"user_id"`
-		Message  string                 `json:"message"`
-		Expenses []dtos.ExpenseResponse `json:"expenses"`
-	}{
-		UserID:   userIDStr,
-		Message:  "expense list tracker",
-		Expenses: expenses,
-	}
-	json.NewEncoder(resWriter).Encode(response)
+	return userID, nil
 }
 
-func (expHandler *ExpenseHandler) GetExpenseByIdAndUserId(resWriter http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodGet {
-		http.Error(resWriter, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	userIDStr, ok := auth.FromContext(req.Context())
-	if !ok {
-		http.Error(resWriter, "unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	userID, err := uuid.Parse(userIDStr)
+func (expenseHandler *ExpenseHandler) List(w http.ResponseWriter, r *http.Request) {
+	userID, err := getUserIDFromContext(r)
 	if err != nil {
-		http.Error(resWriter, "Invalid user ID", http.StatusUnauthorized)
+		errors.WriteError(w, err)
 		return
 	}
 
-	expenseIDStr := req.PathValue("id")
-	if expenseIDStr == "" {
-		http.Error(resWriter, "Missing expense ID", http.StatusBadRequest)
-		return
-	}
-
-	expenseId, err := uuid.Parse(expenseIDStr)
+	expenses, err := expenseHandler.expenseService.List(userID)
 	if err != nil {
-		http.Error(resWriter, "Invalid expense ID", http.StatusBadRequest)
+		errors.WriteError(w, err)
 		return
 	}
 
-	expense, err := expHandler.expenseService.GetExpenseByIDAndUserID(expenseId, userID)
-	if err != nil {
-		http.Error(resWriter, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if expense == nil {
-		http.Error(resWriter, "expense not found", http.StatusNotFound)
-		return
-	}
-
-	resWriter.Header().Set("Content-Type", "application/json")
-	resWriter.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(resWriter).Encode(map[string]*dtos.ExpenseResponse{
-		"expense": expense,
-	})
+	errors.WriteJSON(w, http.StatusOK, expenses)
 }
 
-func (expHandler *ExpenseHandler) CreateExpense(resWriter http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodPost {
-		http.Error(resWriter, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	userIDStr, ok := auth.FromContext(req.Context())
-	if !ok {
-		http.Error(resWriter, "unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	userID, err := uuid.Parse(userIDStr)
+func (expenseHandler *ExpenseHandler) GetExpenseByIdAndUserId(w http.ResponseWriter, r *http.Request) {
+	userID, err := getUserIDFromContext(r)
 	if err != nil {
-		http.Error(resWriter, "Invalid user ID", http.StatusUnauthorized)
+		errors.WriteError(w, err)
 		return
 	}
 
-	var newExpense dtos.ExpenseCreation
-	newExpense.UserID = userID
-	err = json.NewDecoder(req.Body).Decode(&newExpense)
-	if err != nil {
-		http.Error(resWriter, "Invalid request body", http.StatusBadRequest)
+	expenseID := r.PathValue("id")
+	if expenseID == "" {
+		errors.WriteError(w, errors.BadRequest("missing_expense_id", "missing expense id", nil))
 		return
 	}
 
-	err = expHandler.expenseService.CreateExpense(newExpense)
+	id, err := uuid.Parse(expenseID)
 	if err != nil {
-		http.Error(resWriter, err.Error(), http.StatusBadRequest)
+		errors.WriteError(w, errors.BadRequest("invalid_expense_id", "invalid expense id format", err))
+		return
 	}
 
-	resWriter.Header().Set("Content-Type", "application/json")
-	resWriter.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(resWriter).Encode("Expense created")
+	expense, err := expenseHandler.expenseService.GetExpenseByIDAndUserID(id, userID)
+	if err != nil {
+		errors.WriteError(w, err)
+		return
+	}
+
+	errors.WriteJSON(w, http.StatusOK, expense)
 }
 
-func (expHandler *ExpenseHandler) UpdateExpense(resWriter http.ResponseWriter, req http.Request) {
-	if req.Method != http.MethodPut {
-		http.Error(resWriter, "method not allowed", http.StatusMethodNotAllowed)
+func (expenseHandler *ExpenseHandler) CreateExpense(w http.ResponseWriter, r *http.Request) {
+	_, err := getUserIDFromContext(r)
+	if err != nil {
+		errors.WriteError(w, err)
 		return
 	}
 
-	userIDStr, ok := auth.FromContext(req.Context())
-	if !ok {
-		http.Error(resWriter, "unauthorized", http.StatusUnauthorized)
-	}
-
-	userID, err := uuid.Parse(userIDStr)
-	if err != nil {
-		http.Error(resWriter, "Invalid user ID", http.StatusUnauthorized)
+	var req dtos.ExpenseCreation
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		errors.WriteError(w, errors.BadRequest("invalid_json", "invalid request body", err))
 		return
 	}
 
-	expenseIDStr := req.PathValue("id")
-	if expenseIDStr == "" {
-		http.Error(resWriter, "Missing expense ID", http.StatusBadRequest)
+	err = expenseHandler.expenseService.CreateExpense(req)
+	if err != nil {
+		errors.WriteError(w, err)
 		return
 	}
 
-	expenseID, err := uuid.Parse(expenseIDStr)
-	if err != nil {
-		http.Error(resWriter, "Missing expense id", http.StatusBadRequest)
-	}
+	errors.WriteJSON(w, http.StatusCreated, map[string]string{"message": "expense created successfully"})
+}
 
-	var updatedExpense dtos.ExpenseUpdate
-	updatedExpense.UserID = userID
-
-	err = json.NewDecoder(req.Body).Decode(&updatedExpense)
+func (expenseHandler *ExpenseHandler) UpdateExpense(w http.ResponseWriter, r *http.Request) {
+	userID, err := getUserIDFromContext(r)
 	if err != nil {
-		http.Error(resWriter, "Invalid body", http.StatusBadRequest)
+		errors.WriteError(w, err)
 		return
 	}
 
-	err = expHandler.expenseService.UpdateExpense(expenseID, updatedExpense)
-	if err != nil {
-		http.Error(resWriter, err.Error(), http.StatusBadRequest)
+	expenseID := r.PathValue("id")
+	if expenseID == "" {
+		errors.WriteError(w, errors.BadRequest("missing_expense_id", "missing expense id", nil))
+		return
 	}
 
-	resWriter.Header().Set("Content-Type", "application/json")
-	resWriter.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(resWriter).Encode("Expense updated")
+	id, err := uuid.Parse(expenseID)
+	if err != nil {
+		errors.WriteError(w, errors.BadRequest("invalid_expense_id", "invalid expense id format", err))
+		return
+	}
+
+	var req dtos.ExpenseUpdate
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		errors.WriteError(w, errors.BadRequest("invalid_json", "invalid request body", err))
+		return
+	}
+
+	req.UserID = userID
+
+	err = expenseHandler.expenseService.UpdateExpense(id, req)
+	if err != nil {
+		errors.WriteError(w, err)
+		return
+	}
+
+	errors.WriteJSON(w, http.StatusOK, map[string]string{"message": "expense updated successfully"})
+}
+
+func (expenseHandler *ExpenseHandler) DeleteExpense(w http.ResponseWriter, r *http.Request) {
+	userID, err := getUserIDFromContext(r)
+	if err != nil {
+		errors.WriteError(w, err)
+		return
+	}
+
+	expenseID := r.PathValue("id")
+	if expenseID == "" {
+		errors.WriteError(w, errors.BadRequest("missing_expense_id", "missing expense id", nil))
+		return
+	}
+
+	id, err := uuid.Parse(expenseID)
+	if err != nil {
+		errors.WriteError(w, errors.BadRequest("invalid_expense_id", "invalid expense id format", err))
+		return
+	}
+
+	err = expenseHandler.expenseService.DeleteExpense(id, userID)
+	if err != nil {
+		errors.WriteError(w, err)
+		return
+	}
+
+	errors.WriteJSON(w, http.StatusOK, map[string]string{"message": "expense deleted successfully"})
 }

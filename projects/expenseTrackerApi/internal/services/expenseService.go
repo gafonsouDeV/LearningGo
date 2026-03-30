@@ -97,3 +97,14 @@ func (expenseService *ExpenseService) UpdateExpense(expenseId uuid.UUID, updated
 	expenseService.logger.Info("update_expense_successfully", "user_id", updatedExpense.UserID, "expense_id", expenseId)
 	return nil
 }
+
+func (expenseService *ExpenseService) DeleteExpense(expenseId uuid.UUID, userId uuid.UUID) error {
+	err := expenseService.DeleteExpense(expenseId, userId)
+	if err != nil {
+		expenseService.logger.Error("delete_expense_failed", "user_id", userId, "expense_id", expenseId, "error", err.Error())
+		return err
+	}
+
+	expenseService.logger.Info("delete_expense_successfully", "user_id", userId, "expense_id", expenseId)
+	return nil
+}

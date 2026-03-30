@@ -6,8 +6,11 @@ import (
 	"time"
 
 	"github.com/gafonsouDeV/LearningGo/projects/expenseTrackerApi/internal/dtos"
+	appErrors "github.com/gafonsouDeV/LearningGo/projects/expenseTrackerApi/internal/errors"
 	"github.com/gafonsouDeV/LearningGo/projects/expenseTrackerApi/internal/models"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -27,7 +30,7 @@ func (expenseRepository *ExpensePostgresRepository) List(userID uuid.UUID) ([]dt
 		ORDER BY created_at DESC
 	`, userID)
 	if err != nil {
-		return nil, err
+		return nil, appErrors.Internal(err)
 	}
 
 	defer rows.Close()
@@ -46,14 +49,14 @@ func (expenseRepository *ExpensePostgresRepository) List(userID uuid.UUID) ([]dt
 		)
 
 		if err != nil {
-			return nil, err
+			return nil, appErrors.Internal(err)
 		}
 
 		expenses = append(expenses, expense)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, appErrors.Internal(err)
 	}
 
 	return expenses, nil
@@ -82,7 +85,11 @@ func (expenseRepository *ExpensePostgresRepository) GetExpenseByIdAndUserId(id u
 	)
 
 	if err != nil {
-		return nil, err
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, appErrors.NotFound("expense_not_found", "expense not found", err)
+		}
+
+		return nil, appErrors.Internal(err)
 	}
 
 	return &expense, nil
@@ -105,7 +112,12 @@ func (expenseRepository *ExpensePostgresRepository) CreateExpense(expense models
 		expense.UpdatedAt,
 	)
 	if err != nil {
-		return err
+		var pgErr *pgconn.PgError
+		if ok := errors.As(err, &pgErr); ok && pgErr.Code == "23503" {
+			return appErrors.BadRequest("invalid_user_id", "invalid user id", err)
+		}
+
+		return appErrors.Internal(err)
 	}
 
 	return nil
@@ -130,11 +142,11 @@ func (expenseRepository *ExpensePostgresRepository) UpdateExpense(id uuid.UUID, 
 	)
 
 	if err != nil {
-		return err
+		return appErrors.Internal(err)
 	}
 
 	if cmd.RowsAffected() == 0 {
-		return errors.New("expense not found")
+		return appErrors.NotFound("expense_not_found", "expense not found", nil)
 	}
 
 	return nil
@@ -154,11 +166,11 @@ func (expenseRepository *ExpensePostgresRepository) DeleteExpense(expenseId uuid
 	)
 
 	if err != nil {
-		return err
+		return appErrors.Internal(err)
 	}
 
 	if cmd.RowsAffected() == 0 {
-		return errors.New("expense not found")
+		return appErrors.NotFound("expense_not_found", "expense not found", nil)
 	}
 
 	return nil

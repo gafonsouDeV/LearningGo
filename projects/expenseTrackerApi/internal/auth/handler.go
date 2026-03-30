@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gafonsouDeV/LearningGo/projects/expenseTrackerApi/internal/dtos"
+	"github.com/gafonsouDeV/LearningGo/projects/expenseTrackerApi/internal/errors"
 )
 
 type AuthHandler struct {
@@ -12,59 +13,39 @@ type AuthHandler struct {
 }
 
 func NewAuthHandler(authService *AuthService) *AuthHandler {
-	return &AuthHandler{
-		authService: authService,
-	}
+	return &AuthHandler{authService: authService}
 }
 
-func (handler *AuthHandler) Register(resWriter http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodPost {
-		http.Error(resWriter, "Method not allowed", http.StatusMethodNotAllowed)
+func (authHandler *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
+	var req dtos.UserCreateRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		errors.WriteError(w, errors.BadRequest("invalid_json", "invalid request body", err))
 		return
 	}
 
-	var userRequest dtos.UserCreateRequest
-	err := json.NewDecoder(req.Body).Decode(&userRequest)
+	err := authHandler.authService.Register(req)
 	if err != nil {
-		http.Error(resWriter, "Invalid request body", http.StatusBadRequest)
+		errors.WriteError(w, err)
 		return
 	}
 
-	err = handler.authService.Register(userRequest)
-
-	if err != nil {
-		http.Error(resWriter, err.Error(), http.StatusBadRequest)
-		return
-	}
-	resWriter.Header().Set("Content-Type", "application/json")
-	resWriter.WriteHeader(http.StatusCreated)
-	json.NewEncoder(resWriter).Encode(map[string]string{
-		"message": "User registered successfully",
-	})
+	errors.WriteJSON(w, http.StatusCreated, map[string]string{"message": "user registered successfully"})
 }
 
-func (handler *AuthHandler) Login(resWriter http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodPost {
-		http.Error(resWriter, "Method not allowed", http.StatusMethodNotAllowed)
+func (authHandler *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+	var req dtos.UserCreateRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		errors.WriteError(w, errors.BadRequest("invalid_json", "invalid request body", err))
 		return
 	}
 
-	var loginRequest dtos.UserCreateRequest
-	err := json.NewDecoder(req.Body).Decode(&loginRequest)
+	token, err := authHandler.authService.Login(req)
 	if err != nil {
-		http.Error(resWriter, "Invalid request body: "+err.Error(), http.StatusBadRequest)
+		errors.WriteError(w, err)
 		return
 	}
 
-	token, err := handler.authService.Login(loginRequest)
-	if err != nil {
-		http.Error(resWriter, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	resWriter.Header().Set("Content-Type", "application/json")
-	resWriter.WriteHeader(http.StatusOK)
-	json.NewEncoder(resWriter).Encode(map[string]string{
-		"token": token,
-	})
+	errors.WriteJSON(w, http.StatusOK, map[string]string{"token": token})
 }
